@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "./Button";
 import { useState } from "react";
 import {
   Dialog,
@@ -25,6 +24,8 @@ import {
   TableBody,
   TableCell,
 } from "./ui/table";
+import { Save, Settings2 } from "lucide-react";
+import { Button } from "./ui/button";
 
 const OPERATIONS = ["sum", "average", "max", "min", "count"] as const;
 export type Operation = (typeof OPERATIONS)[number];
@@ -65,7 +66,7 @@ export function MetricOperations({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="text-sm">
-          Configure Metric Operations
+          Configure Metric Operations <Settings2 />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
@@ -114,7 +115,7 @@ export function MetricOperations({
           className="text-sm w-fit mx-auto"
           onClick={() => setOpen(false)}
         >
-          Save
+          Save <Save />
         </Button>
       </DialogContent>
     </Dialog>

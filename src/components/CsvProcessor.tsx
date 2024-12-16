@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/select";
 import { processCsv } from "@/actions/csvProcessor";
 import { FileUpload } from "./ui/file-upload";
-import { Button } from "./Button";
+
 import {
   MetricOperations,
   Operation,
   type MetricConfig,
 } from "./MetricOperations";
+import { Button } from "./ui/button";
+import { Download, Loader2, SendHorizonal } from "lucide-react";
 
 // Define the main CsvProcessor component that handles all CSV processing operations
 export default function CsvProcessor() {
@@ -119,6 +121,13 @@ export default function CsvProcessor() {
     return "Process File";
   };
 
+  // Calculate the appropriate button icon based on the current state
+  const getButtonIcon = () => {
+    if (isProcessing) return <Loader2 />;
+
+    return <SendHorizonal />;
+  };
+
   return (
     <div className="bg-white rounded-lg p-8">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -183,12 +192,12 @@ export default function CsvProcessor() {
         {/* Show process button only when no download is available */}
         {!downloadUrl && (
           <Button
-            className="mx-auto block"
+            className="mx-auto"
             disabled={
               isProcessing || !file || !selectedColumn || metrics.length === 0
             }
           >
-            {getButtonText()}
+            {getButtonText()} {getButtonIcon()}
           </Button>
         )}
       </form>
@@ -196,8 +205,8 @@ export default function CsvProcessor() {
       {/* Download button appears after processing */}
       {downloadUrl && (
         <a href={downloadUrl} download="processed.csv">
-          <Button variant="success" className="mt-2 mx-auto block">
-            Download Processed CSV
+          <Button className="mt-2 mx-auto">
+            Download Processed CSV <Download />
           </Button>
         </a>
       )}
