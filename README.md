@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="public/icon.svg" height="64" width="64">
 
-## Getting Started
+  # CSV Deduper
 
-First, run the development server:
+  A Next.js application for processing CSV files with comma-separated values in cells through row expansion and metric aggregation.
+</div>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![image](https://github.com/user-attachments/assets/af55dc29-db72-4f33-885e-660672bab481)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What is Row Expansion?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Row expansion transforms data where multiple values are stored in a single cell (comma-separated) into separate rows. This is particularly valuable when working with analytics data where events or content might belong to multiple categories.
 
-## Learn More
+Here's a simple example:
 
-To learn more about Next.js, take a look at the following resources:
+### Before expansion
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Content group | Page views | Time on page |
+| ------------- | ---------- | ------------ |
+| Sports,Tech   | 1500       | 120          |
+| News          | 750        | 90           |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### After expansion and aggregation
 
-## Deploy on Vercel
+| Content group | Page views_sum | Time on page_average |
+| ------------- | -------------- | -------------------- |
+| Sports        | 1500           | 120                  |
+| Tech          | 1500           | 120                  |
+| News          | 750            | 90                   |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Row expansion for comma-separated values
+- Configurable metric aggregations (sum, average, max, min, count)
+- Interactive data preview
+- Processed file download
+- Clean, intuitive interface
+
+https://github.com/user-attachments/assets/d6580c45-5038-4b7f-af0c-1404952ffc88
