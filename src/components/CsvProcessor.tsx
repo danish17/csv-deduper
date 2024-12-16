@@ -17,10 +17,11 @@ import {
   type MetricConfig,
 } from "./MetricOperations";
 import { Button } from "./ui/button";
-import { Download, Loader2, SendHorizonal } from "lucide-react";
+import { Loader2, SendHorizonal } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "./ui/toaster";
 import { AnimatePresence, motion } from "framer-motion";
+import { FileView } from "./FileView";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -35,7 +36,10 @@ export default function CsvProcessor() {
   const [selectedColumn, setSelectedColumn] = useState<string | undefined>(
     undefined
   );
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [processedData, setProcessedData] = useState<{
+    data: BlobPart;
+    filename: string;
+  } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [metrics, setMetrics] = useState<MetricConfig[]>([]);
 
@@ -56,7 +60,7 @@ export default function CsvProcessor() {
         setColumns(headers.map((header) => header.trim()));
         setSelectedColumn("");
         setMetrics([]);
-        setDownloadUrl(null);
+        setProcessedData(null);
       }
     } catch (error) {
       console.error("Error processing file:", error);
@@ -99,8 +103,15 @@ export default function CsvProcessor() {
       const result = await processCsv(formData);
 
       if (result.success) {
-        setDownloadUrl(result.url as string);
-        toast({ title: "File processed successfully!" });
+        setProcessedData({
+          data: result.data as BlobPart,
+          filename: result.filename as string,
+        });
+
+        toast({
+          title: "File processed successfully!",
+          variant: "default",
+        });
       } else {
         toast({
           title: "Processing failed",
@@ -118,6 +129,22 @@ export default function CsvProcessor() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleDownload = () => {
+    if (!processedData) return;
+
+    const blob = new Blob([processedData.data], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", processedData.filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   const handleColumnSelect = (column: string) => {
@@ -179,11 +206,12 @@ export default function CsvProcessor() {
         </AnimatePresence>
 
         <AnimatePresence>
-          {!downloadUrl && file && (
+          {file && (
             <motion.div {...fadeInUp} className="flex justify-center">
               <Button
                 disabled={
                   isProcessing ||
+                  !!processedData ||
                   !file ||
                   !selectedColumn ||
                   metrics.length === 0
@@ -202,14 +230,14 @@ export default function CsvProcessor() {
       </form>
 
       <AnimatePresence>
-        {downloadUrl && (
-          <motion.div {...fadeInUp} className="flex justify-center">
-            <a href={downloadUrl} download="processed.csv">
-              <Button className="mt-4 bg-[#138A36] hover:bg-[#138A36] hover:brightness-90">
-                Download Processed CSV <Download className="ml-2" />
-              </Button>
-            </a>
-          </motion.div>
+        {processedData && (
+          <div className="flex justify-center mt-4">
+            <FileView
+              csvData={processedData.data.toString()}
+              filename={processedData.filename}
+              onDownload={handleDownload}
+            />
+          </div>
         )}
       </AnimatePresence>
     </div>

@@ -1,14 +1,11 @@
 'use server'
 
-import { writeFile, unlink } from 'fs/promises'
 import { parse } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
-import path from 'path'
 
-// Define supported aggregation operations
+// We keep our type definitions and helper function
 type Operation = 'sum' | 'average' | 'max' | 'min' | 'count'
 
-// Helper function to perform aggregation operations
 function aggregateValues(values: number[], operation: Operation): number {
   switch (operation) {
     case 'sum':
@@ -27,7 +24,7 @@ function aggregateValues(values: number[], operation: Operation): number {
 }
 
 export async function processCsv(formData: FormData) {
-  // Get all required parameters from form data
+  // Input validation remains the same
   const file = formData.get('file') as File
   const dimensionColumn = formData.get('dimensionColumn') as string
   const delimiter = ","
@@ -40,7 +37,7 @@ export async function processCsv(formData: FormData) {
     return { success: false, error: 'Missing required fields' }
   }
 
-  // Read and parse the CSV file
+  // File processing remains the same
   const buffer = Buffer.from(await file.arrayBuffer())
   const fileContent = buffer.toString()
   const lines = fileContent.split('\n')
@@ -54,55 +51,39 @@ export async function processCsv(formData: FormData) {
     skip_empty_lines: true
   })
 
-  // Group the records by the specified column
+  // Data processing remains the same
   const groupedData = records.reduce((acc: any, record: any) => {
-    // Split the group by column value if it contains multiple values
     const groups = record[dimensionColumn].split(',').map((g: string) => g.trim())
-    
-    // Process each group value
     groups.forEach((group: string) => {
       if (!acc[group]) {
         acc[group] = []
       }
       acc[group].push(record)
     })
-    
     return acc
   }, {})
 
-  // Perform aggregations for each group
   const aggregatedData = Object.entries(groupedData).map(([group, records]: [string, any]) => {
     const result: any = {
       [dimensionColumn]: group
     }
-
-    // Calculate aggregations for each metric
     metricsConfig.forEach(({ column, operation }) => {
       const values = records.map((record: { [x: string]: string }) => parseFloat(record[column])).filter((val: number) => !isNaN(val))
       result[`${column}_${operation}`] = aggregateValues(values, operation)
     })
-
     return result
   })
 
-  // Generate CSV output
-  const output = stringify(aggregatedData, { 
+  // Instead of writing to a file, we generate the CSV string
+  const csvContent = stringify(aggregatedData, { 
     header: true, 
     delimiter 
   })
 
-  // Save the file
-  const fileName = `aggregated_${Date.now()}.csv`
-  const filePath = path.join(process.cwd(), 'public', fileName)
-
-  await writeFile(filePath, output)
-
-  // Schedule file deletion after 5 minutes
-  setTimeout(() => {
-    unlink(filePath).catch(console.error)
-  }, 5 * 60 * 1000)
-
-  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cleanup`);
-  
-  return { success: true, url: `/${fileName}` }
+  // Return the CSV content directly along with a suggested filename
+  return { 
+    success: true, 
+    data: csvContent,
+    filename: `aggregated_${Date.now()}.csv`
+  }
 }
