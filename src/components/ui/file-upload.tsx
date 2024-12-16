@@ -35,9 +35,9 @@ export const FileUpload = ({
 
   const handleFileChange = (newFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    if ( onChange) {
-      onChange(newFiles)
-    };
+    if (onChange) {
+      onChange(newFiles);
+    }
   };
 
   const handleClick = () => {
@@ -104,7 +104,7 @@ export const FileUpload = ({
                       layout
                       className="rounded-lg px-2 py-1 w-fit flex-shrink-0 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white shadow-input"
                     >
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      {(file.size / 1024).toFixed(2)} KB
                     </motion.p>
                   </div>
 
