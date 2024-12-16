@@ -30,7 +30,7 @@ export async function processCsv(formData: FormData) {
   // Get all required parameters from form data
   const file = formData.get('file') as File
   const dimensionColumn = formData.get('dimensionColumn') as string
-  const delimiter = formData.get('delimiter') as string
+  const delimiter = ","
   const metricsConfig = JSON.parse(formData.get('metricsConfig') as string) as {
     column: string;
     operation: Operation;

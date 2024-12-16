@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -36,7 +35,6 @@ export default function CsvProcessor() {
   const [selectedColumn, setSelectedColumn] = useState<string | undefined>(
     undefined
   );
-  const [delimiter, setDelimiter] = useState(",");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [metrics, setMetrics] = useState<MetricConfig[]>([]);
@@ -54,7 +52,7 @@ export default function CsvProcessor() {
       const headerLine = lines.find((line) => !line.trim().startsWith("#"));
 
       if (headerLine) {
-        const headers = headerLine.split(delimiter);
+        const headers = headerLine.split(",");
         setColumns(headers.map((header) => header.trim()));
         setSelectedColumn("");
         setMetrics([]);
@@ -96,7 +94,6 @@ export default function CsvProcessor() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("dimensionColumn", selectedColumn);
-      formData.append("delimiter", delimiter);
       formData.append("metricsConfig", JSON.stringify(metrics));
 
       const result = await processCsv(formData);
@@ -176,17 +173,6 @@ export default function CsvProcessor() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-                <motion.div {...fadeInUp}>
-                  <Label className="text-gray-700">Delimiter</Label>
-                  <Input
-                    type="text"
-                    value={delimiter}
-                    onChange={(e) => setDelimiter(e.target.value)}
-                    maxLength={1}
-                    className="mt-1 cursor-pointer"
-                  />
-                </motion.div>
               </div>
             </motion.div>
           )}
