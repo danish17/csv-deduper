@@ -116,6 +116,11 @@ export default function CsvProcessor() {
 
       if (result.success) {
         setDownloadUrl(result.url as string);
+        toast({
+          title: "File deduped successfully!",
+          variant: "default",
+          duration: 5000,
+        });
       } else {
         toast({
           title: "Uh oh! Something went wrong...",
@@ -163,10 +168,6 @@ export default function CsvProcessor() {
   return (
     <div className="bg-white rounded-lg p-8">
       <Toaster />
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-        CSV Deduper 🪄
-      </h1>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* File upload section */}
         <FileUpload
