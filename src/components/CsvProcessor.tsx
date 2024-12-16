@@ -98,9 +98,18 @@ export default function CsvProcessor() {
       // Prepare form data for submission
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("column", selectedColumn);
+      formData.append("dimensionColumn", selectedColumn);
       formData.append("delimiter", delimiter);
       formData.append("metricsConfig", JSON.stringify(metrics));
+
+      // Log values
+      const values = {
+        file: formData.get("file"),
+        dimensionColumn: formData.get("dimensionColumn"),
+        delimiter: formData.get("delimiter"),
+        metricsConfig: formData.get("metricsConfig"),
+      };
+      console.log("Form data values:", values);
 
       // Process the CSV file
       const result = await processCsv(formData);
@@ -229,7 +238,7 @@ export default function CsvProcessor() {
       {/* Download button appears after processing */}
       {downloadUrl && (
         <a href={downloadUrl} download="processed.csv">
-          <Button className="mt-2 mx-auto">
+          <Button className="mt-4 mx-auto bg-[#138A36] hover:bg-[#138A36] hover:brightness-90">
             Download Processed CSV <Download />
           </Button>
         </a>

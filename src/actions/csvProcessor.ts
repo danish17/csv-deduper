@@ -102,5 +102,7 @@ export async function processCsv(formData: FormData) {
     unlink(filePath).catch(console.error)
   }, 5 * 60 * 1000)
 
+  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/cleanup`);
+  
   return { success: true, url: `/${fileName}` }
 }
