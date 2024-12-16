@@ -26,17 +26,17 @@ interface FileViewProps {
   onDownload: () => void;
 }
 
-export function FileView({ csvData, filename, onDownload }: FileViewProps) {
-  // We parse the CSV string into structured data that we can display in our table
+export const FileView = ({ csvData, filename, onDownload }: FileViewProps) => {
   const records = parse(csvData, {
     columns: true,
     skip_empty_lines: true,
   });
 
-  // We extract column headers from the first record for our table
   const columns = Object.keys(records[0] || {});
+  const totalRows = records.length;
+  // Show only first 10 rows
+  const displayedRecords = records.slice(0, 10);
 
-  // This helper function formats our numeric values for better readability
   const formatValue = (value: string) => {
     const num = parseFloat(value);
     if (isNaN(num)) return value;
@@ -58,7 +58,9 @@ export function FileView({ csvData, filename, onDownload }: FileViewProps) {
           <DrawerHeader>
             <DrawerTitle>Processed Results</DrawerTitle>
             <DrawerDescription>
-              Showing processed data from {filename}
+              {totalRows > 10
+                ? `Showing first 10 rows of ${totalRows} rows from ${filename}`
+                : `Showing ${totalRows} of ${totalRows} rows from ${filename}`}
             </DrawerDescription>
           </DrawerHeader>
 
@@ -75,7 +77,7 @@ export function FileView({ csvData, filename, onDownload }: FileViewProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {records.map(
+                  {displayedRecords.map(
                     (
                       record: { [x: string]: string },
                       index: Key | null | undefined
@@ -88,6 +90,17 @@ export function FileView({ csvData, filename, onDownload }: FileViewProps) {
                         ))}
                       </TableRow>
                     )
+                  )}
+                  {/* Show ellipsis row if there are more than 10 rows */}
+                  {totalRows > 10 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="text-center text-muted-foreground italic"
+                      >
+                        ... {totalRows - 10} more rows
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -104,4 +117,4 @@ export function FileView({ csvData, filename, onDownload }: FileViewProps) {
       </DrawerContent>
     </Drawer>
   );
-}
+};
