@@ -87,6 +87,7 @@ export default function CsvProcessor() {
         title: "Uh oh! Something went wrong...",
         description: "Please select valid metric operations",
         variant: "destructive",
+        duration: 5000,
       });
       return;
     }
@@ -111,6 +112,7 @@ export default function CsvProcessor() {
           title: "Uh oh! Something went wrong...",
           description: "There was an error while processing the CSV.",
           variant: "destructive",
+          duration: 5000,
         });
       }
     } catch (error) {
@@ -119,6 +121,7 @@ export default function CsvProcessor() {
         title: "Uh oh! Something went wrong...",
         description: "An unexpected error occured, please try again.",
         variant: "destructive",
+        duration: 5000,
       });
     } finally {
       setIsProcessing(false);
