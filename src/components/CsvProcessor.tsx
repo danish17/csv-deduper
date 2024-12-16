@@ -20,6 +20,8 @@ import {
 } from "./MetricOperations";
 import { Button } from "./ui/button";
 import { Download, Loader2, SendHorizonal } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "./ui/toaster";
 
 // Define the main CsvProcessor component that handles all CSV processing operations
 export default function CsvProcessor() {
@@ -33,6 +35,8 @@ export default function CsvProcessor() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [metrics, setMetrics] = useState<MetricConfig[]>([]);
+
+  const { toast } = useToast();
 
   // Handle file selection and extract column headers
   const handleFileChange = async (files: File[]) => {
@@ -70,12 +74,20 @@ export default function CsvProcessor() {
 
     // Validate required fields
     if (!file || !selectedColumn) {
-      alert("Please select a file and column to group by");
+      toast({
+        title: "Uh oh! Something went wrong...",
+        description: "Please select a file and column to group by",
+        variant: "destructive",
+      });
       return;
     }
 
     if (metrics.length === 0) {
-      alert("Please add at least one metric operation");
+      toast({
+        title: "Uh oh! Something went wrong...",
+        description: "Please select valid metric operations",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -95,11 +107,19 @@ export default function CsvProcessor() {
       if (result.success) {
         setDownloadUrl(result.url as string);
       } else {
-        alert("Error processing CSV: " + result.error);
+        toast({
+          title: "Uh oh! Something went wrong...",
+          description: "There was an error while processing the CSV.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Error during processing:", error);
-      alert("An unexpected error occurred. Please try again.");
+      toast({
+        title: "Uh oh! Something went wrong...",
+        description: "An unexpected error occured, please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -130,6 +150,7 @@ export default function CsvProcessor() {
 
   return (
     <div className="bg-white rounded-lg p-8">
+      <Toaster />
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
         CSV Deduper 🪄
       </h1>
@@ -190,7 +211,7 @@ export default function CsvProcessor() {
         )}
 
         {/* Show process button only when no download is available */}
-        {!downloadUrl && (
+        {!downloadUrl && file && (
           <Button
             className="mx-auto"
             disabled={

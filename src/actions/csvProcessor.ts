@@ -29,14 +29,14 @@ function aggregateValues(values: number[], operation: Operation): number {
 export async function processCsv(formData: FormData) {
   // Get all required parameters from form data
   const file = formData.get('file') as File
-  const groupByColumn = formData.get('groupByColumn') as string
+  const dimensionColumn = formData.get('dimensionColumn') as string
   const delimiter = formData.get('delimiter') as string
   const metricsConfig = JSON.parse(formData.get('metricsConfig') as string) as {
     column: string;
     operation: Operation;
   }[]
 
-  if (!file || !groupByColumn || !delimiter || !metricsConfig) {
+  if (!file || !dimensionColumn || !delimiter || !metricsConfig) {
     return { success: false, error: 'Missing required fields' }
   }
 
@@ -57,7 +57,7 @@ export async function processCsv(formData: FormData) {
   // Group the records by the specified column
   const groupedData = records.reduce((acc: any, record: any) => {
     // Split the group by column value if it contains multiple values
-    const groups = record[groupByColumn].split(',').map((g: string) => g.trim())
+    const groups = record[dimensionColumn].split(',').map((g: string) => g.trim())
     
     // Process each group value
     groups.forEach((group: string) => {
@@ -73,7 +73,7 @@ export async function processCsv(formData: FormData) {
   // Perform aggregations for each group
   const aggregatedData = Object.entries(groupedData).map(([group, records]: [string, any]) => {
     const result: any = {
-      [groupByColumn]: group
+      [dimensionColumn]: group
     }
 
     // Calculate aggregations for each metric
