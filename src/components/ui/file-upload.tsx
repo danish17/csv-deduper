@@ -1,28 +1,18 @@
 import { cn } from "@/lib/utils";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
+import { useToast } from "@/hooks/use-toast";
 
 const mainVariant = {
-  initial: {
-    x: 0,
-    y: 0,
-  },
-  animate: {
-    x: 20,
-    y: -20,
-    opacity: 0.9,
-  },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
 };
 
 const secondaryVariant = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
 };
 
 export const FileUpload = ({
@@ -44,15 +34,30 @@ export const FileUpload = ({
     fileInputRef.current?.click();
   };
 
-  const { getRootProps, isDragActive } = useDropzone({
+  const { getRootProps, isDragActive, fileRejections } = useDropzone({
     multiple: false,
     noClick: true,
     maxFiles: 1,
+    accept: {
+      "text/csv": [],
+    },
     onDrop: handleFileChange,
     onDropRejected: (error) => {
       console.log(error);
     },
   });
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (fileRejections?.length > 0) {
+      toast({
+        title: "Unsupported file type",
+        description: "Please upload CSV files only",
+        variant: "destructive",
+      });
+    }
+  }, [fileRejections, toast]);
 
   return (
     <div className="w-full" {...getRootProps()}>
@@ -65,7 +70,7 @@ export const FileUpload = ({
           ref={fileInputRef}
           id="csv-file"
           type="file"
-          accept=".csv"
+          accept="text/csv"
           onChange={(e) => {
             const files = Array.from(e.target.files || []);
             if (files.length > 0) {
@@ -101,7 +106,7 @@ export const FileUpload = ({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       layout
-                      className="text-base text-neutral-700 dark:text-neutral-300 truncate max-w-xs"
+                      className="text-sm text-neutral-700 dark:text-neutral-300 truncate max-w-xs"
                     >
                       {file.name}
                     </motion.p>
@@ -109,13 +114,13 @@ export const FileUpload = ({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       layout
-                      className="rounded-lg px-2 py-1 w-fit flex-shrink-0 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white shadow-input"
+                      className="rounded-lg px-2 py-1 w-fit flex-shrink-0 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-white shadow-input"
                     >
                       {(file.size / 1024).toFixed(2)} KB
                     </motion.p>
                   </div>
 
-                  <div className="flex text-sm md:flex-row flex-col items-start md:items-center w-full mt-2 justify-between text-neutral-600 dark:text-neutral-400">
+                  <div className="flex text-xs md:flex-row flex-col items-start md:items-center w-full mt-2 justify-between text-neutral-600 dark:text-neutral-400">
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -123,15 +128,6 @@ export const FileUpload = ({
                       className="px-1 py-0.5 rounded-md bg-gray-100 dark:bg-neutral-800 "
                     >
                       {file.type}
-                    </motion.p>
-
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                    >
-                      modified{" "}
-                      {new Date(file.lastModified).toLocaleDateString()}
                     </motion.p>
                   </div>
                 </motion.div>

@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-white">
+    <main className="min-h-screen flex items-center justify-center bg-white py-16">
       <div className="w-full max-w-xl">
         <div className="flex flex-col items-center gap-4">
           <Image height={48} width={48} alt="CSV Deduper" src="icon.svg" />
