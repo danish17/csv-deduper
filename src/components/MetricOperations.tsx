@@ -66,22 +66,23 @@ export function MetricOperations({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="text-sm">
-          Configure Metric Operations <Settings2 />
+          Configure Aggregations <Settings2 />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Configure Operations</DialogTitle>
+          <DialogTitle>Configure Aggregations</DialogTitle>
           <DialogDescription>
-            You can configure the operations to be performed on each metric
-            after deduplication
+            You can configure the aggregation to be performed on each metric
+            after row expansion and deduplication. The default is
+            &apos;sum&apos;.
           </DialogDescription>
         </DialogHeader>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Metric</TableHead>
-              <TableHead className="w-[150px]">Operation</TableHead>
+              <TableHead className="w-[150px]">Aggregation</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
